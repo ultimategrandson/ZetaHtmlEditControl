@@ -1475,7 +1475,7 @@ namespace ZetaHtmlEditControl
             }
         }
 
-        internal void ExecuteUnderline()
+        public void ExecuteUnderline()
         {
             if (Document != null)
             {
@@ -1489,7 +1489,7 @@ namespace ZetaHtmlEditControl
             if (Document != null) Document.ExecCommand(@"Redo", false, null);
         }
 
-        internal void ExecuteUndo()
+        public void ExecuteUndo()
         {
             if (Document != null) Document.ExecCommand(@"Undo", false, null);
         }
@@ -1805,6 +1805,8 @@ namespace ZetaHtmlEditControl
                     CanJustifyLeft;
                 justifyRightToolStripMenuItem.Enabled =
                     CanJustifyRight;
+                justifyFullToolStripMenuItem.Enabled =
+                    CanJustifyFull;
                 numberedListToolStripMenuItem.Enabled =
                     CanOrderedList;
                 outdentToolStripMenuItem.Enabled =
@@ -1832,7 +1834,7 @@ namespace ZetaHtmlEditControl
             }
         }
 
-        internal bool CanOutdent
+        public bool CanOutdent
         {
             get
             {
@@ -1841,7 +1843,7 @@ namespace ZetaHtmlEditControl
             }
         }
 
-        internal bool CanOrderedList
+        public bool CanOrderedList
         {
             get
             {
@@ -1858,7 +1860,16 @@ namespace ZetaHtmlEditControl
             }
         }
 
-        internal bool CanJustifyRight
+        public bool CanJustifyFull
+        {
+            get
+            {
+                return Document != null && (Enabled &&
+                                            ((HTMLDocument)Document.DomDocument).queryCommandEnabled(@"JustifyFull"));
+            }
+        }
+
+        public bool CanJustifyRight
         {
             get
             {
@@ -1867,7 +1878,7 @@ namespace ZetaHtmlEditControl
             }
         }
 
-        internal bool CanJustifyLeft
+        public bool CanJustifyLeft
         {
             get
             {
@@ -1876,7 +1887,7 @@ namespace ZetaHtmlEditControl
             }
         }
 
-        internal bool CanJustifyCenter
+        public bool CanJustifyCenter
         {
             get
             {
@@ -1885,7 +1896,7 @@ namespace ZetaHtmlEditControl
             }
         }
 
-        internal bool CanIndent
+        public bool CanIndent
         {
             get
             {
@@ -1894,7 +1905,7 @@ namespace ZetaHtmlEditControl
             }
         }
 
-        internal bool CanDelete
+        public bool CanDelete
         {
             get
             {
@@ -1903,7 +1914,7 @@ namespace ZetaHtmlEditControl
             }
         }
 
-        internal bool CanPaste
+        public bool CanPaste
         {
             get
             {
@@ -1912,12 +1923,12 @@ namespace ZetaHtmlEditControl
             }
         }
 
-        internal bool CanCopy
+        public bool CanCopy
         {
             get { return Document != null && ((HTMLDocument)Document.DomDocument).queryCommandEnabled(@"Copy"); }
         }
 
-        private bool CanCut
+        public bool CanCut
         {
             get
             {
@@ -1926,7 +1937,7 @@ namespace ZetaHtmlEditControl
             }
         }
 
-        internal bool CanItalic
+        public bool CanItalic
         {
             get
             {
@@ -1935,7 +1946,7 @@ namespace ZetaHtmlEditControl
             }
         }
 
-        internal bool CanUnderline
+        public bool CanUnderline
         {
             get
             {
@@ -1944,7 +1955,7 @@ namespace ZetaHtmlEditControl
             }
         }
 
-        internal bool CanBold
+        public bool CanBold
         {
             get
             {
@@ -1953,7 +1964,7 @@ namespace ZetaHtmlEditControl
             }
         }
 
-        internal bool CanChangeFont
+        public bool CanChangeFont
         {
             get
             {
@@ -1961,7 +1972,7 @@ namespace ZetaHtmlEditControl
             }
         }
 
-        internal bool CanBullettedList
+        public bool CanBullettedList
         {
             get
             {
@@ -1970,7 +1981,7 @@ namespace ZetaHtmlEditControl
             }
         }
 
-        internal bool CanForeColor
+        public bool CanForeColor
         {
             get
             {
@@ -1979,7 +1990,7 @@ namespace ZetaHtmlEditControl
             }
         }
 
-        internal bool CanBackColor
+        public bool CanBackColor
         {
             get
             {
@@ -1988,7 +1999,7 @@ namespace ZetaHtmlEditControl
             }
         }
 
-        internal bool CanInsertHyperlink
+        public bool CanInsertHyperlink
         {
             get
             {
@@ -2007,7 +2018,7 @@ namespace ZetaHtmlEditControl
             ExecuteBold();
         }
 
-        internal void ExecuteBold()
+        public void ExecuteBold()
         {
             if (Document != null)
             {
@@ -2021,7 +2032,7 @@ namespace ZetaHtmlEditControl
 
         //commands list
         //https://developer.mozilla.org/en/docs/Rich-Text_Editing_in_Mozilla
-        internal void ExecuteFontSize(string newSize)
+        public void ExecuteFontSize(string newSize)
         {
             if (Document != null)
             {
@@ -2030,7 +2041,7 @@ namespace ZetaHtmlEditControl
             }
         }
 
-        internal void ExecuteFontName(string name)
+        public void ExecuteFontName(string name)
         {
             if (Document != null)
             {
@@ -2044,7 +2055,7 @@ namespace ZetaHtmlEditControl
             ExecuteItalic();
         }
 
-        internal void ExecuteItalic()
+        public void ExecuteItalic()
         {
             if (Document != null)
             {
@@ -2060,7 +2071,7 @@ namespace ZetaHtmlEditControl
             ExecutePaste();
         }
 
-        internal void ExecutePaste()
+        public void ExecutePaste()
         {
             handlePaste(false);
         }
@@ -2070,7 +2081,7 @@ namespace ZetaHtmlEditControl
             ExecutePasteAsText();
         }
 
-        internal void ExecutePasteAsText()
+        public void ExecutePasteAsText()
         {
             handlePaste(true);
         }
@@ -2080,7 +2091,7 @@ namespace ZetaHtmlEditControl
             ExecuteShowSource();
         }
 
-        internal void ExecuteShowSource()
+        public void ExecuteShowSource()
         {
             using (var form = new HtmlSourceTextEditForm(DocumentText))
             {
@@ -2099,7 +2110,7 @@ namespace ZetaHtmlEditControl
             ExecuteInsertHyperlink();
         }
 
-        internal void ExecuteInsertHyperlink()
+        public void ExecuteInsertHyperlink()
         {
             if (Document != null)
             {
@@ -2114,7 +2125,7 @@ namespace ZetaHtmlEditControl
             ExecuteIndent();
         }
 
-        internal void ExecuteIndent()
+        public void ExecuteIndent()
         {
             if (Document != null)
             {
@@ -2130,7 +2141,7 @@ namespace ZetaHtmlEditControl
             ExecuteJustifyCenter();
         }
 
-        internal void ExecuteJustifyCenter()
+        public void ExecuteJustifyCenter()
         {
             if (Document != null)
             {
@@ -2146,7 +2157,7 @@ namespace ZetaHtmlEditControl
             ExecuteJustifyLeft();
         }
 
-        internal void ExecuteJustifyLeft()
+        public void ExecuteJustifyLeft()
         {
             if (Document != null)
             {
@@ -2162,7 +2173,7 @@ namespace ZetaHtmlEditControl
             ExecuteJustifyRight();
         }
 
-        internal void ExecuteJustifyRight()
+        public void ExecuteJustifyRight()
         {
             if (Document != null)
             {
@@ -2173,12 +2184,28 @@ namespace ZetaHtmlEditControl
             }
         }
 
+        private void justifyFullToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            ExecuteJustifyFull();
+        }
+
+        public void ExecuteJustifyFull()
+        {
+            if (Document != null)
+            {
+                var doc =
+                    (HTMLDocument)Document.DomDocument;
+
+                doc.execCommand(@"JustifyFull", false, null);
+            }
+        }
+
         private void numberedListToolStripMenuItem_Click(object sender, EventArgs e)
         {
             ExecuteNumberedList();
         }
 
-        internal void ExecuteNumberedList()
+        public void ExecuteNumberedList()
         {
             if (Document != null)
             {
@@ -2194,7 +2221,7 @@ namespace ZetaHtmlEditControl
             ExecuteOutdent();
         }
 
-        internal void ExecuteOutdent()
+        public void ExecuteOutdent()
         {
             if (Document != null)
             {
@@ -2210,7 +2237,7 @@ namespace ZetaHtmlEditControl
             ExecuteBullettedList();
         }
 
-        internal void ExecuteBullettedList()
+        public void ExecuteBullettedList()
         {
             if (Document != null)
             {
@@ -2226,7 +2253,7 @@ namespace ZetaHtmlEditControl
             ExecuteCopy();
         }
 
-        internal void ExecuteCopy()
+        public void ExecuteCopy()
         {
             if (Document != null)
             {
@@ -2242,7 +2269,7 @@ namespace ZetaHtmlEditControl
             ExecuteCut();
         }
 
-        internal void ExecuteCut()
+        public void ExecuteCut()
         {
             if (Document != null)
             {
@@ -2267,7 +2294,7 @@ namespace ZetaHtmlEditControl
             ExecuteDelete();
         }
 
-        internal void ExecuteDelete()
+        public void ExecuteDelete()
         {
             if (Document != null)
             {
