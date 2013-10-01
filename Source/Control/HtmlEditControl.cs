@@ -341,6 +341,14 @@ namespace ZetaHtmlEditControl
         private const string CssFontStyle =
             @"font-family: Segoe UI, Tahoma, Verdana, Arial; font-size: {font-size}; ";
 
+        private const string HeadingFontSizes =
+            " h1 {{ font-size: {0}; }}" +
+            " h2 {{ font-size: {1}; }}" +
+            " h3 {{ font-size: {2}; }}" +
+            " h4 {{ font-size: {3}; }}" +
+            " h5 {{ font-size: {4}; }}" +
+            " h6 {{ font-size: {5}; }}";
+
         private string _cssText = _defaultCssText;
         private string _htmlTemplate = _defaultHtmlTemplate;
 
@@ -376,16 +384,30 @@ namespace ZetaHtmlEditControl
             }
         }
 
+        /// <summary>
+        /// Sets the sizes for H1, H2, H3, H4
+        /// </summary>
+        /// <param name="h1FontSize">H1</param>
+        /// <param name="h2FontSize">H2</param>
+        /// <param name="h3FontSize">H3</param>
+        /// <param name="h4FontSize">H4</param>
+        public void SetHeadingFontSize(string h1FontSize, string h2FontSize, string h3FontSize, string h4FontSize, string h5FontSize, string h6FontSize)
+        {
+            _headingStyles = string.Format(HeadingFontSizes, h1FontSize, h2FontSize, h3FontSize, h4FontSize, h5FontSize, h6FontSize);
+        }
+
+        private static string _headingStyles = null;
+
         private static string _defaultCssText = @"body { {font-style}; margin: 4px; line-height: 110%; }
 			li { margin-bottom: 5pt; }
 			a { color: blue; }
 			table { {font-style}; }
 			tr { {font-style}; }
-			th { padding:1px; border-top: 2px inset #777; border-right: 2px inset #fff; border-bottom: 2px inset #aaa; border-left: 2px inset #fff; font-weight: bold; {font-style}; }
+			th { padding: 1px; border-top: 2px inset #777; border-right: 2px inset #fff; border-bottom: 2px inset #aaa; border-left: 2px inset #fff; font-weight: bold; {font-style}; }
 			td { padding: 1px; border: 2px inset #fff; {font-style}; }";
 
         private static string _defaultHtmlTemplate =
-            @"<!DOCTYPE html PUBLIC ""-//W3C//DTD XHTML 1.0 Transitional//EN"" ""http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"">
+        @"<!DOCTYPE html PUBLIC ""-//W3C//DTD XHTML 1.0 Transitional//EN"" ""http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"">
 			<html xmlns=""http://www.w3.org/1999/xhtml"">
 				<head>
 					<meta http-equiv=""Content-Type"" content=""text/html; charset=utf-8"" />
@@ -423,12 +445,14 @@ namespace ZetaHtmlEditControl
             return doBuildCompleteHtml(
                 body,
                 _defaultHtmlTemplate,
-                _defaultCssText);
+                _cssText + _headingStyles);
         }
 
         public HtmlEditControl()
         {
             InitializeComponent();
+
+            _headingStyles = string.Format(HeadingFontSizes, "200%", "175%", "150%", "125%", "110%", "100%");
 
             AllowWebBrowserDrop = false;
 
@@ -665,7 +689,7 @@ namespace ZetaHtmlEditControl
 
         private string buildCompleteHtml(string htmlBody)
         {
-            return doBuildCompleteHtml(htmlBody, _htmlTemplate, _cssText);
+            return doBuildCompleteHtml(htmlBody, _htmlTemplate, _cssText + _headingStyles);
         }
 
         private string doBuildCompleteHtml(
