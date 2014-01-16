@@ -4,6 +4,7 @@ namespace ZetaHtmlEditControl
     using Sgml;
     using System;
     using System.Collections.Generic;
+    using System.Drawing;
     using System.IO;
     using System.Net;
     using System.Text.RegularExpressions;
@@ -72,15 +73,13 @@ namespace ZetaHtmlEditControl
                     }
                     else
                     {
-                        image = new WebClient().DownloadData(
-                            getWebAddressFromFile(imageInfo.Source, baseUri));
+                        image = new WebClient().DownloadData(getWebAddressFromFile(imageInfo.Source, baseUri));
                     }
 
-                    if (image != null)
+                    if (image != null && IsValidImage(image))
                     {
                         //schreiben
                         File.WriteAllBytes(filePath, image);
-
                         checkResizeImage(filePath, imageInfo.Width, imageInfo.Height);
 
                         //ersetzen
@@ -116,6 +115,20 @@ namespace ZetaHtmlEditControl
                 }
 
                 return html;
+            }
+        }
+
+        private static bool IsValidImage(byte[] aImage)
+        {
+            try
+            {
+                using (MemoryStream ms = new MemoryStream())
+                using (Image im = Image.FromStream(ms)) { }
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
             }
         }
 
