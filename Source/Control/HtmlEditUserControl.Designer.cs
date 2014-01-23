@@ -406,6 +406,7 @@
             // htmlEditControl
             // 
             this.htmlEditControl.AllowWebBrowserDrop = false;
+            this.htmlEditControl.CssFontSize = "8.25pt";
             resources.ApplyResources(this.htmlEditControl, "htmlEditControl");
             this.htmlEditControl.IsWebBrowserContextMenuEnabled = false;
             this.htmlEditControl.Name = "htmlEditControl";
