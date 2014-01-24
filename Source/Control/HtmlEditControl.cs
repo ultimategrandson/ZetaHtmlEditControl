@@ -1070,18 +1070,18 @@ namespace ZetaHtmlEditControl
             string html,
             string url)
         {
-            if (originalNames != null && originalNames.Count > 0)
+            Uri uri = null;
+            if (Uri.TryCreate(url, UriKind.Absolute, out uri) && originalNames != null && originalNames.Count > 0)
             {
                 foreach (var s in originalNames)
                 {
                     if (!s.Source.StartsWith(@"http") && !s.Source.StartsWith(@"https"))
                     {
-                        html = html.Replace(
-                            s.Source,
-                            HtmlConversionHelper.GetPathFromFile(s.Source, new Uri(url)));
+                        html = html.Replace(s.Source, HtmlConversionHelper.GetPathFromFile(s.Source, uri));
                     }
                 }
             }
+
             return html;
         }
 
