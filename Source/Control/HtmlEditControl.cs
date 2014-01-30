@@ -49,9 +49,11 @@ namespace ZetaHtmlEditControl
             justifyLeftToolStripMenuItem.ShortcutKeys = Keys.Control | Keys.L;
             justifyCenterToolStripMenuItem.ShortcutKeys = Keys.Control | Keys.E;
             justifyRightToolStripMenuItem.ShortcutKeys = Keys.Control | Keys.R;
+            justifyFullToolStripMenuItem.ShortcutKeys = Keys.Control | Keys.J;
             hyperLinkToolStripMenuItem.ShortcutKeys = Keys.Control | Keys.K;
-            boldToolStripMenuItem.ShortcutKeys = Keys.Control | Keys.Shift | Keys.F;
+            boldToolStripMenuItem.ShortcutKeys = Keys.Control | Keys.Shift | Keys.B;
             italicToolStripMenuItem.ShortcutKeys = Keys.Control | Keys.Shift | Keys.I;
+            underlineToolStripMenuItem.ShortcutKeys = Keys.Control | Keys.Shift | Keys.U;
             cutToolStripMenuItem.ShortcutKeys = Keys.Control | Keys.X;
         }
 
@@ -1068,18 +1070,18 @@ namespace ZetaHtmlEditControl
             string html,
             string url)
         {
-            if (originalNames != null && originalNames.Count > 0)
+            Uri uri = null;
+            if (Uri.TryCreate(url, UriKind.Absolute, out uri) && originalNames != null && originalNames.Count > 0)
             {
                 foreach (var s in originalNames)
                 {
                     if (!s.Source.StartsWith(@"http") && !s.Source.StartsWith(@"https"))
                     {
-                        html = html.Replace(
-                            s.Source,
-                            HtmlConversionHelper.GetPathFromFile(s.Source, new Uri(url)));
+                        html = html.Replace(s.Source, HtmlConversionHelper.GetPathFromFile(s.Source, uri));
                     }
                 }
             }
+
             return html;
         }
 
@@ -1550,7 +1552,7 @@ namespace ZetaHtmlEditControl
                 _firstCreate = false;
 
                 // 2012-08-28, Uwe Keim: Enable gray shortcut texts.
-                contextMenuStrip.Renderer = new MyToolStripRender();
+                //contextMenuStrip.Renderer = new MyToolStripRender();
             }
 
             // 2005-09-02: Can be null if showing a full-window PDF-viewer.
@@ -2278,13 +2280,7 @@ namespace ZetaHtmlEditControl
 
                 if (isTextSelection)
                 {
-                    var range =
-                        (IHTMLTxtRange)doc.selection.createRange();
-
-                    Clipboard.SetText(range.htmlText);
-
-                    // 2011-10-20, added.
-                    ExecuteDelete();
+                    doc.execCommand(@"Cut", false, null);
                 }
             }
         }
