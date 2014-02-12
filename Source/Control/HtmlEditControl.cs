@@ -906,93 +906,102 @@ namespace ZetaHtmlEditControl
         private void handlePaste(
             bool asTextOnly)
         {
-            if (Document != null)
+            try
             {
-                var doc = (HTMLDocument)Document.DomDocument;
+                Cursor.Current = Cursors.WaitCursor;
 
-                if (isControlSelection)
+                if (Document != null)
                 {
-                    doc.execCommand(@"Delete", false, null);
-                }
-                string html;
+                    var doc = (HTMLDocument)Document.DomDocument;
 
-                if (Clipboard.ContainsImage())
-                {
-                    var image = Clipboard.GetImage();
-                    var file = Path.Combine(_tmpFolderPath, _objectID.ToString(CultureInfo.InvariantCulture));
-                    if (image != null)
+                    if (isControlSelection)
                     {
-                        image.Save(file, image.RawFormat);
+                        doc.execCommand(@"Delete", false, null);
                     }
+                    string html;
 
-                    _objectID++;
-
-                    if (Configuration.AllowEmbeddedImages)
+                    if (Clipboard.ContainsImage())
                     {
-                        var data = File.ReadAllBytes(file);
-                        var imageContent = Convert.ToBase64String(data, 0, data.Length);
-                        File.Delete(file);
+                        var image = Clipboard.GetImage();
+                        var file = Path.Combine(_tmpFolderPath, _objectID.ToString(CultureInfo.InvariantCulture));
+                        if (image != null)
+                        {
+                            image.Save(file, image.RawFormat);
+                        }
 
-                        html = string.Format(@"<img src=""data:image;base64,{0}"" />", imageContent);
+                        _objectID++;
+
+                        if (Configuration.AllowEmbeddedImages)
+                        {
+                            var data = File.ReadAllBytes(file);
+                            var imageContent = Convert.ToBase64String(data, 0, data.Length);
+                            File.Delete(file);
+
+                            html = string.Format(@"<img src=""data:image;base64,{0}"" />", imageContent);
+                        }
+                        else
+                        {
+                            html = string.Format(@"<img src=""{0}"" id=""Img{1}"" />", file, DateTime.Now.Ticks);
+                        }
                     }
                     else
                     {
-                        html = string.Format(@"<img src=""{0}"" id=""Img{1}"" />", file, DateTime.Now.Ticks);
-                    }
-                }
-                else
-                {
-                    if (!asTextOnly && Clipboard.ContainsText(TextDataFormat.Html))
-                    {
-                        // Get HTML from Clipboard.
-                        // Modified 2006-06-12, Uwe Keim.
-                        string clipText;
-                        byte[] originalBuffer;
-                        getHtmlFromClipboard(out clipText, out originalBuffer);
-
-                        //selected fragment
-                        html = getHtmlFragmentFromClipboardCode(clipText, originalBuffer);
-
-                        //only body from fragment
-                        html = getBodyFromHtmlCode(html);
-
-                        //images save or load from web
-                        html = checkImages(HtmlConversionHelper.FindImgs(html), html,
-                            getSourceUrlFromClipboardHtmlCode(clipText));
-                    }
-                    else if (Clipboard.ContainsText(TextDataFormat.UnicodeText))
-                    {
-                        html = Clipboard.GetText(TextDataFormat.UnicodeText);
-
-                        if (asTextOnly)
+                        if (!asTextOnly && Clipboard.ContainsText(TextDataFormat.Html))
                         {
-                            html = getOnlyTextFromHtmlCode(html);
+                            // Get HTML from Clipboard.
+                            // Modified 2006-06-12, Uwe Keim.
+                            string clipText;
+                            byte[] originalBuffer;
+                            getHtmlFromClipboard(out clipText, out originalBuffer);
+
+                            //selected fragment
+                            html = getHtmlFragmentFromClipboardCode(clipText, originalBuffer);
+
+                            //only body from fragment
+                            html = getBodyFromHtmlCode(html);
+
+                            //images save or load from web
+                            html = checkImages(HtmlConversionHelper.FindImgs(html), html,
+                                getSourceUrlFromClipboardHtmlCode(clipText));
                         }
-
-                        html = PathHelper.HtmlEncode(html);
-                        html = addNewLineToText(html);
-                    }
-                    else if (Clipboard.ContainsText(TextDataFormat.Text))
-                    {
-                        html = Clipboard.GetText(TextDataFormat.Text);
-
-                        if (asTextOnly)
+                        else if (Clipboard.ContainsText(TextDataFormat.UnicodeText))
                         {
-                            html = getOnlyTextFromHtmlCode(html);
+                            html = Clipboard.GetText(TextDataFormat.UnicodeText);
+
+                            if (asTextOnly)
+                            {
+                                html = getOnlyTextFromHtmlCode(html);
+                            }
+
+                            html = PathHelper.HtmlEncode(html);
+                            html = addNewLineToText(html);
                         }
+                        else if (Clipboard.ContainsText(TextDataFormat.Text))
+                        {
+                            html = Clipboard.GetText(TextDataFormat.Text);
 
-                        html = PathHelper.HtmlEncode(html);
-                        html = addNewLineToText(html);
+                            if (asTextOnly)
+                            {
+                                html = getOnlyTextFromHtmlCode(html);
+                            }
+
+                            html = PathHelper.HtmlEncode(html);
+                            html = addNewLineToText(html);
+                        }
+                        else
+                        {
+                            html = string.Empty;
+                        }
                     }
-                    else
-                    {
-                        html = string.Empty;
-                    }
+
+                    var selection = doc.selection;
+                    var range = (IHTMLTxtRange)selection.createRange();
+                    range.pasteHTML(html);
                 }
-
-                var selection = doc.selection;
-                var range = (IHTMLTxtRange)selection.createRange();
-                range.pasteHTML(html);
+            }
+            finally
+            {
+                Cursor.Current = Cursors.Default;
             }
         }
 
@@ -2527,7 +2536,19 @@ namespace ZetaHtmlEditControl
             }
 
             var sel2 = CurrentSelectionText;
+
+            IMarkupServices markup = (IMarkupServices)DomDocument;
+            IMarkupPointer start;
+            IMarkupPointer end;
+            markup.CreateMarkupPointer(out start);
+            markup.CreateMarkupPointer(out end);
+            markup.MovePointersToRange(sel2, start, end);
+
             sel2.pasteHTML(html);
+
+            markup.MoveRangeToPointers(start, end, sel2);
+            sel2.select();
+            
         }
 
         /// <summary>
